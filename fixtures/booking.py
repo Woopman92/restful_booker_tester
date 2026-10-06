@@ -1,8 +1,10 @@
-from datetime import date, timedelta
+from datetime import date
+from datetime import timedelta
 
 import pytest
 
-from client.client import create_booking, get_booking_ids
+from client.client import create_booking
+from client.client import get_booking_ids
 from helpers.booking_data import get_create_booking_data
 from helpers.common import generate_unique_string
 
@@ -12,6 +14,7 @@ def user_booking():
     data = get_create_booking_data()
     booking = create_booking(payload=data)
     return data, booking['bookingid']
+
 
 @pytest.fixture
 def user_bookings_with_diff_firstnames():
@@ -28,6 +31,7 @@ def user_bookings_with_diff_firstnames():
 
     return firstname, (booking_1['bookingid'], booking_3['bookingid'])
 
+
 @pytest.fixture
 def user_bookings_with_diff_lastname():
     """
@@ -42,6 +46,7 @@ def user_bookings_with_diff_lastname():
     create_booking(payload=booking_data_3)
 
     return lastname, (booking_1['bookingid'], booking_2['bookingid'])
+
 
 @pytest.fixture
 def user_bookings_with_diff_checkin():
@@ -61,6 +66,7 @@ def user_bookings_with_diff_checkin():
 
     return checkin, (booking_1['bookingid'], booking_2['bookingid'], booking_3['bookingid'])
 
+
 @pytest.fixture
 def user_bookings_with_diff_checkout():
     """
@@ -79,6 +85,7 @@ def user_bookings_with_diff_checkout():
     booking_3 = create_booking(payload=booking_data_3)
 
     return checkout, (booking_1['bookingid'], booking_2['bookingid'], booking_3['bookingid'])
+
 
 @pytest.fixture
 def user_bookings_with_diff_params():
@@ -119,6 +126,7 @@ def user_bookings_with_diff_params():
         booking_ids.append(booking['bookingid'])
 
     return {'firstname': firstname, 'lastname': lastname, 'checkin': checkin, 'checkout': checkout}, booking_ids
+
 
 @pytest.fixture
 def nonexistent_booking_id():

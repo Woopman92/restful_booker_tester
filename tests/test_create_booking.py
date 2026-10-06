@@ -1,11 +1,13 @@
 import json
-from datetime import date, timedelta
+from datetime import date
+from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
 
 from checkers.booking import check_create_booking_response
-from client.client import create_booking, create_booking_with_error_response
+from client.client import create_booking
+from client.client import create_booking_with_error_response
 from helpers.booking_data import get_create_booking_data
 
 
@@ -18,7 +20,7 @@ class TestCreateBookingPositive:
 
         check_create_booking_response(response=response, expected_data=data)
 
-    @pytest.mark.parametrize('value', ['A', 'Alexander', 'John Doe', 'John-Doe', 'O`Connor', 'A'*1000, ''])
+    @pytest.mark.parametrize('value', ['A', 'Alexander', 'John Doe', 'John-Doe', 'O`Connor', 'A' * 1000, ''])
     @pytest.mark.parametrize('param', ['firstname', 'lastname'])
     def test_create_booking_with_diff_valid_names(self, param, value):
         data = get_create_booking_data()
@@ -66,7 +68,7 @@ class TestCreateBookingPositive:
 
         check_create_booking_response(response=response, expected_data=data)
 
-    @pytest.mark.parametrize('value', ['Breakfast, dinner and supper', 'Breakfast', '', 123, 'A'*1000])
+    @pytest.mark.parametrize('value', ['Breakfast, dinner and supper', 'Breakfast', '', 123, 'A' * 1000])
     def test_create_booking_with_diff_valid_additionalneeds(self, value):
         data = get_create_booking_data(additionalneeds=value)
 
@@ -105,11 +107,13 @@ class TestCreateBookingNegative:
         data = get_create_booking_data()
         data.pop(param)
 
-        response = create_booking_with_error_response(expected_status_code=HTTPStatus.INTERNAL_SERVER_ERROR, payload=data)
+        response = create_booking_with_error_response(
+            expected_status_code=HTTPStatus.INTERNAL_SERVER_ERROR, payload=data
+        )
 
         assert response.text == 'Internal Server Error'
 
-    @pytest.mark.parametrize('param', ["checkin", "checkout"])
+    @pytest.mark.parametrize('param', ['checkin', 'checkout'])
     def test_create_booking_without_bookingdates_required_params(self, param):
         data = get_create_booking_data()
         data['bookingdates'].pop(param)
@@ -160,7 +164,6 @@ class TestCreateBookingNegative:
         # Need to clarify the expected result. This is a test of the function's current behavior
         data['bookingdates'][param] = '2026-03-01'
         check_create_booking_response(response=response, expected_data=data)
-
 
     @pytest.mark.parametrize(
         'data',

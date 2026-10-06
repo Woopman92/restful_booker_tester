@@ -5,13 +5,13 @@ from helpers.common import generate_unique_string
 
 
 def get_create_booking_data(
-        firstname: str | None = None,
-        lastname: str | None = None,
-        totalprice: int = 100,
-        depositpaid: bool = True,
-        checkin: str | None = None,
-        checkout: str | None = None,
-        additionalneeds: str | None = None,
+    firstname: str | None = None,
+    lastname: str | None = None,
+    totalprice: int = 100,
+    depositpaid: bool = True,
+    checkin: str | None = None,
+    checkout: str | None = None,
+    additionalneeds: str | None = None,
 ):
     """
     Prepare POST /booking request payload
@@ -34,23 +34,21 @@ def get_create_booking_data(
         'lastname': lastname,
         'totalprice': totalprice,
         'depositpaid': depositpaid,
-        'bookingdates': {
-            'checkin': checkin,
-            'checkout': checkout
-        },
+        'bookingdates': {'checkin': checkin, 'checkout': checkout},
         'additionalneeds': additionalneeds
     }
     return response
 
+
 def get_updated_booking_data(
-        existing_booking_data: dict,
-        firstname: str | None = None,
-        lastname: str | None = None,
-        totalprice: int | None = None,
-        depositpaid: bool = True,
-        checkin: str | None = None,
-        checkout: str | None = None,
-        additionalneeds: str | None = None,
+    existing_booking_data: dict,
+    firstname: str | None = None,
+    lastname: str | None = None,
+    totalprice: int | None = None,
+    depositpaid: bool = True,
+    checkin: str | None = None,
+    checkout: str | None = None,
+    additionalneeds: str | None = None,
 ):
     """
     Prepare PUT /booking/:id request payload
@@ -81,10 +79,7 @@ def get_updated_booking_data(
         'lastname': lastname,
         'totalprice': totalprice,
         'depositpaid': depositpaid,
-        'bookingdates': {
-            'checkin': checkin,
-            'checkout': checkout
-        },
+        'bookingdates': {'checkin': checkin, 'checkout': checkout},
         'additionalneeds': additionalneeds
     }
     return response

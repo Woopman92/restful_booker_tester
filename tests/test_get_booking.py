@@ -1,7 +1,8 @@
 from http import HTTPStatus
 
 from checkers.booking import check_get_booking_response
-from client.client import get_booking, get_booking_with_error_response
+from client.client import get_booking
+from client.client import get_booking_with_error_response
 
 
 class TestCreateBookingPositive:

@@ -1,19 +1,23 @@
-from copy import deepcopy, copy
+from copy import copy
 from datetime import date
 from http import HTTPStatus
 
 import pytest
-
-from checkers.booking import check_update_booking_response, check_booking_update
-from client.client import update_booking_with_error_response, partial_update_booking, \
-    partial_update_booking_with_error_response
-from helpers.booking_data import get_updated_booking_data
 from pytest_lazy_fixtures import lf
+
+from checkers.booking import check_booking_update
+from checkers.booking import check_update_booking_response
+from client.client import partial_update_booking
+from client.client import partial_update_booking_with_error_response
+from client.client import update_booking_with_error_response
+from helpers.booking_data import get_updated_booking_data
 
 
 class TestPartialUpdateBookingPositive:
 
-    @pytest.mark.parametrize('headers', [lf('update_booking_headers_with_cookie'), lf('update_booking_headers_with_auth')])
+    @pytest.mark.parametrize(
+        'headers', [lf('update_booking_headers_with_cookie'), lf('update_booking_headers_with_auth')]
+    )
     def test_partial_update_booking(self, user_booking, headers):
         existing_booking_data, booking_id = user_booking
         data = get_updated_booking_data(existing_booking_data=existing_booking_data)
@@ -26,40 +30,54 @@ class TestPartialUpdateBookingPositive:
     def test_partial_update_booking_with_same_params(self, user_booking, update_booking_headers_with_cookie):
         existing_booking_data, booking_id = user_booking
 
-        response = partial_update_booking(booking_id=booking_id, payload=existing_booking_data, headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=existing_booking_data, headers=update_booking_headers_with_cookie
+        )
 
         check_update_booking_response(response=response, expected_data=existing_booking_data)
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', ['A', 'Alexander', 'John Doe', 'John-Doe', 'O`Connor', 'A' * 1000, ''])
     @pytest.mark.parametrize('param', ['firstname', 'lastname'])
-    def test_partial_update_booking_with_diff_valid_names(self, user_booking, update_booking_headers_with_cookie, param, value):
+    def test_partial_update_booking_with_diff_valid_names(
+        self, user_booking, update_booking_headers_with_cookie, param, value
+    ):
         existing_booking_data, booking_id = user_booking
         data = {param: value}
 
-        response = partial_update_booking(booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie
+        )
 
         existing_booking_data[param] = value
         check_update_booking_response(response=response, expected_data=existing_booking_data)
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', [0, 1, 999999999, -1, 2.5, 2.6, 3.5, '100'])
-    def test_partial_update_booking_with_diff_valid_total_price_values(self, user_booking, update_booking_headers_with_cookie, value):
+    def test_partial_update_booking_with_diff_valid_total_price_values(
+        self, user_booking, update_booking_headers_with_cookie, value
+    ):
         existing_booking_data, booking_id = user_booking
         data = {'totalprice': value}
 
-        response = partial_update_booking(booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie
+        )
 
         existing_booking_data['totalprice'] = int(value)
         check_update_booking_response(response=response, expected_data=existing_booking_data)
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', [True, False, 1, 0, '', 'false'])
-    def test_partial_update_booking_with_diff_valid_depositpaid_values(self, user_booking, update_booking_headers_with_cookie, value):
+    def test_partial_update_booking_with_diff_valid_depositpaid_values(
+        self, user_booking, update_booking_headers_with_cookie, value
+    ):
         existing_booking_data, booking_id = user_booking
         data = {'depositpaid': value}
 
-        response = partial_update_booking(booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie
+        )
 
         existing_booking_data['depositpaid'] = bool(value)
         check_update_booking_response(response=response, expected_data=existing_booking_data)
@@ -67,12 +85,14 @@ class TestPartialUpdateBookingPositive:
 
     @pytest.mark.parametrize('value', ['2026/01/01', '01-01-2026', '2026-1-1', '2026-01-01'])
     def test_partial_update_booking_with_diff_bookingdates_date_formats(
-            self, user_booking, update_booking_headers_with_cookie, value
+        self, user_booking, update_booking_headers_with_cookie, value
     ):
         existing_booking_data, booking_id = user_booking
         data = {'bookingdates': {'checkin': value, 'checkout': value}}
 
-        response = partial_update_booking(booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie
+        )
 
         existing_booking_data['bookingdates']['checkin'] = '2026-01-01'
         existing_booking_data['bookingdates']['checkout'] = '2026-01-01'
@@ -80,11 +100,15 @@ class TestPartialUpdateBookingPositive:
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', ['Breakfast, dinner and supper', 'Breakfast', '', 123, 'A' * 1000])
-    def test_partial_update_booking_with_diff_valid_additionalneeds(self, user_booking, update_booking_headers_with_cookie, value):
+    def test_partial_update_booking_with_diff_valid_additionalneeds(
+        self, user_booking, update_booking_headers_with_cookie, value
+    ):
         existing_booking_data, booking_id = user_booking
         data = {'additionalneeds': value}
 
-        response = partial_update_booking(booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie
+        )
 
         existing_booking_data['additionalneeds'] = value
         check_update_booking_response(response=response, expected_data=existing_booking_data)
@@ -124,7 +148,9 @@ class TestPartialUpdateBookingNegative:
             {'lastname': 123},
         ],
     )
-    def test_partial_update_booking_with_invalid_type_param(self, user_booking, update_booking_headers_with_cookie, booking_data):
+    def test_partial_update_booking_with_invalid_type_param(
+        self, user_booking, update_booking_headers_with_cookie, booking_data
+    ):
         existing_booking_data, booking_id = user_booking
 
         response = partial_update_booking(
@@ -147,8 +173,9 @@ class TestPartialUpdateBookingNegative:
             {'additionalneeds': None},
         ],
     )
-    def test_partial_update_booking_with_non_type_param(self, user_booking, update_booking_headers_with_cookie,
-                                                        booking_data):
+    def test_partial_update_booking_with_non_type_param(
+        self, user_booking, update_booking_headers_with_cookie, booking_data
+    ):
         existing_booking_data, booking_id = user_booking
 
         response = partial_update_booking(
@@ -162,8 +189,9 @@ class TestPartialUpdateBookingNegative:
         check_update_booking_response(response=response, expected_data=existing_booking_data)
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
-    def test_partial_update_booking_with_non_type_depositpaid_param(self, user_booking,
-                                                                    update_booking_headers_with_cookie):
+    def test_partial_update_booking_with_non_type_depositpaid_param(
+        self, user_booking, update_booking_headers_with_cookie
+    ):
         existing_booking_data, booking_id = user_booking
 
         response = partial_update_booking(
@@ -178,9 +206,9 @@ class TestPartialUpdateBookingNegative:
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('param', ['checkin', 'checkout'])
-    def test_partial_update_booking_with_non_type_bookingdates_param(self, user_booking,
-                                                                     update_booking_headers_with_cookie,
-                                                                     param):
+    def test_partial_update_booking_with_non_type_bookingdates_param(
+        self, user_booking, update_booking_headers_with_cookie, param
+    ):
         existing_booking_data, booking_id = user_booking
         updated_bookingdates = copy(existing_booking_data['bookingdates'])
         updated_bookingdates[param] = None
@@ -198,7 +226,9 @@ class TestPartialUpdateBookingNegative:
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', ['2018-01-01', None], ids=['string', 'nontype'])
-    def test_partial_update_booking_with_invalid_type_bookingdates(self, user_booking, update_booking_headers_with_cookie, value):
+    def test_partial_update_booking_with_invalid_type_bookingdates(
+        self, user_booking, update_booking_headers_with_cookie, value
+    ):
         existing_booking_data, booking_id = user_booking
         data = {'bookingdates': value}
 
@@ -214,8 +244,9 @@ class TestPartialUpdateBookingNegative:
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('param', ['checkin', 'checkout'])
-    def test_partial_update_booking_without_bookingdates_required_params(self, user_booking, update_booking_headers_with_cookie,
-                                                                 param):
+    def test_partial_update_booking_without_bookingdates_required_params(
+        self, user_booking, update_booking_headers_with_cookie, param
+    ):
         existing_booking_data, booking_id = user_booking
         updated_bookingdates = copy(existing_booking_data['bookingdates'])
         updated_bookingdates.pop(param)
@@ -234,13 +265,17 @@ class TestPartialUpdateBookingNegative:
 
     @pytest.mark.parametrize('value', ['2018-13-01', '2018-01-32'], ids=['invalid_month', 'invalid_day'])
     @pytest.mark.parametrize('param', ['checkin', 'checkout'])
-    def test_partial_update_booking_with_invalid_bookingdates(self, user_booking, update_booking_headers_with_cookie, param, value):
+    def test_partial_update_booking_with_invalid_bookingdates(
+        self, user_booking, update_booking_headers_with_cookie, param, value
+    ):
         existing_booking_data, booking_id = user_booking
         updated_bookingdates = copy(existing_booking_data['bookingdates'])
         updated_bookingdates[param] = value
         data = {'bookingdates': updated_bookingdates}
 
-        response = partial_update_booking(booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie
+        )
 
         # Need to clarify the expected result. This is a test of the function's current behavior
         existing_booking_data['bookingdates'][param] = '0NaN-aN-aN'
@@ -248,27 +283,27 @@ class TestPartialUpdateBookingNegative:
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('param', ['checkin', 'checkout'])
-    def test_partial_update_booking_with_invalid_non_leap_year_bookingdates(self, user_booking,
-                                                                    update_booking_headers_with_cookie, param):
+    def test_partial_update_booking_with_invalid_non_leap_year_bookingdates(
+        self, user_booking, update_booking_headers_with_cookie, param
+    ):
         existing_booking_data, booking_id = user_booking
         updated_bookingdates = copy(existing_booking_data['bookingdates'])
         updated_bookingdates[param] = '2026-02-29'
         data = {'bookingdates': updated_bookingdates}
 
-        response = partial_update_booking(booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie
+        )
 
         # Need to clarify the expected result. This is a test of the function's current behavior
         existing_booking_data['bookingdates'][param] = '2026-03-01'
         check_update_booking_response(response=response, expected_data=existing_booking_data)
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
-    @pytest.mark.parametrize(
-        'header',
-        [
-            {'Cookie': 'token=123'},
-            {'Authorization': 'Basic 123'},
-        ]
-    )
+    @pytest.mark.parametrize('header', [
+        {'Cookie': 'token=123'},
+        {'Authorization': 'Basic 123'},
+    ])
     def test_partial_update_booking_with_invalid_auth_headers(self, user_booking, header):
         existing_booking_data, booking_id = user_booking
         headers = {
@@ -290,29 +325,28 @@ class TestPartialUpdateBookingNegative:
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize(
-        'update_booking_headers_with_cookie',
-        [
+        'update_booking_headers_with_cookie', [
             {'Content-Type': 'text/plain'},
-        ],
-        indirect=True
+        ], indirect=True
     )
-    def test_partial_update_booking_with_invalid_content_type_header(self, user_booking, update_booking_headers_with_cookie):
+    def test_partial_update_booking_with_invalid_content_type_header(
+        self, user_booking, update_booking_headers_with_cookie
+    ):
         existing_booking_data, booking_id = user_booking
         data = get_updated_booking_data(existing_booking_data=existing_booking_data)
 
-        response = partial_update_booking(booking_id=booking_id, payload=data,
-                                          headers=update_booking_headers_with_cookie)
+        response = partial_update_booking(
+            booking_id=booking_id, payload=data, headers=update_booking_headers_with_cookie
+        )
 
         check_update_booking_response(response=response, expected_data=existing_booking_data)
         # checking that the booking details have not changed
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize(
-        'update_booking_headers_with_cookie',
-        [
+        'update_booking_headers_with_cookie', [
             {'Accept': 'text/plain'},
-        ],
-        indirect=True
+        ], indirect=True
     )
     def test_partial_update_booking_with_invalid_accept_header(self, user_booking, update_booking_headers_with_cookie):
         existing_booking_data, booking_id = user_booking

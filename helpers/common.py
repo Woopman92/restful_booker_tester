@@ -1,5 +1,5 @@
-import string
 import secrets
+import string
 
 
 def generate_unique_string(length=12):

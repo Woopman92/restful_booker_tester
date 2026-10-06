@@ -1,8 +1,5 @@
 from checkers.booking import check_get_booking_ids_response_structure
 from client.client import get_booking_ids
-
-from pytest_lazy_fixtures import lf
-
 from helpers.common import generate_unique_string
 
 
@@ -25,7 +22,7 @@ class TestGetBookingIdsPositive:
         response = get_booking_ids(firstname=firstname)
 
         assert response == [{'bookingid': booking_ids[0]}, {'bookingid': booking_ids[1]}]
-        
+
     def test_get_booking_ids_filtered_by_lastname(self, user_bookings_with_diff_lastname):
         lastname, booking_ids = user_bookings_with_diff_lastname
         response = get_booking_ids(lastname=lastname)

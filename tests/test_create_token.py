@@ -1,7 +1,6 @@
-import re
 import pytest
 
-from checkers.token import check_successful_token_create_response
+from checkers.auth_token import check_successful_token_create_response
 from client.client import create_token
 from constants import CREATE_TOKEN_CREDS
 
@@ -23,8 +22,7 @@ class TestCreateTokenPositive:
 class TestCreateTokenNegative:
 
     @pytest.mark.parametrize(
-        'data',
-        [
+        'data', [
             {'username': 'odmin', 'password': 'password123'},
             {'username': 'admin', 'password': 'password124'},
         ],
