@@ -1,0 +1,25 @@
+[project]
+name = "restful-booker-tester"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pytest (>=9.1.1,<10.0.0)",
+    "requests (>=2.34.2,<3.0.0)",
+    "pytest-lazy-fixtures (>=1.4.1,<2.0.0)"
+]
+
+[tool.poetry]
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.3.0"
+isort = "^9.0.1"
+yapf = "^0.43.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
