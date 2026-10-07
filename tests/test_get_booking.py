@@ -5,7 +5,7 @@ from client.client import get_booking
 from client.client import get_booking_with_error_response
 
 
-class TestCreateBookingPositive:
+class TestGetBookingPositive:
 
     def test_get_created_booking(self, user_booking):
         booking_data, booking_id = user_booking
@@ -13,6 +13,9 @@ class TestCreateBookingPositive:
         response = get_booking(booking_id=booking_id)
 
         check_get_booking_response(response, booking_data)
+
+
+class TestGetBookingNegative:
 
     def test_get_nonexistent_booking(self, user_booking):
         booking_data, booking_id = user_booking

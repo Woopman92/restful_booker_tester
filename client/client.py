@@ -152,6 +152,18 @@ def delete_booking(expected_status_code=HTTPStatus.CREATED, booking_id: int = No
     )
 
 
+def delete_booking_with_error_response(
+    expected_status_code=HTTPStatus.BAD_REQUEST, booking_id: int = None, headers: dict = None, **kwargs
+):
+    return make_request(
+        method='DELETE',
+        url=DELETE_BOOKING.format(booking_id=booking_id),
+        expected_status_code=expected_status_code,
+        headers=headers,
+        **kwargs
+    )
+
+
 def make_request(
     method: str,
     url: str,
