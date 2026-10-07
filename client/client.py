@@ -1,7 +1,12 @@
+import logging
+import time
 from datetime import date
 from http import HTTPStatus
 
+import pytest
 import requests
+
+logger = logging.getLogger(__name__)
 
 HOST = 'https://restful-booker.herokuapp.com'
 CREATE_TOKEN_URL = HOST + '/auth'
@@ -11,6 +16,7 @@ CREATE_BOOKING_URL = GET_BOOKING_IDS_URL
 UPDATE_BOOKING_URL = GET_BOOKING
 PARTIAL_UPDATE_BOOKING_URL = UPDATE_BOOKING_URL
 DELETE_BOOKING = GET_BOOKING
+HEALTH_CHECK = HOST + '/ping'
 
 
 def create_token(data: dict = None, headers: dict = None):
@@ -162,6 +168,35 @@ def delete_booking_with_error_response(
         headers=headers,
         **kwargs
     )
+
+
+def wait_for_host(
+    wait_time: int = 100,
+    retry_count: int = 10,
+    available_timeout: int = 5,
+    required_successful_connections: int = 1,
+) -> None:
+
+    successful_connections_count = 0
+
+    for _ in range(retry_count):
+        time.sleep(wait_time / retry_count)
+
+        if successful_connections_count == required_successful_connections:
+            logger.info('The service is operating successfully')
+            break
+
+        try:
+            logger.info('Waiting a response from the host')
+            response = requests.get(url=HEALTH_CHECK, timeout=available_timeout)
+            response.raise_for_status()
+            successful_connections_count += 1
+        except requests.exceptions.RequestException:
+            successful_connections_count = 0
+
+    else:
+        logger.exception('Did not receive a response from the host')
+        pytest.exit('Did not receive a response from the host')
 
 
 def make_request(
