@@ -9,6 +9,7 @@ from client.client import delete_booking
 from client.client import delete_booking_with_error_response
 
 
+@pytest.mark.positive
 class TestDeleteBookingPositive:
 
     @pytest.mark.parametrize(
@@ -26,6 +27,7 @@ class TestDeleteBookingPositive:
         check_bookings_exist(booking_ids=list(three_created_booking_ids)[1:])
 
 
+@pytest.mark.negative
 class TestDeleteBookingNegative:
 
     def test_delete_nonexistent_booking(self, nonexistent_booking_id, update_booking_headers_with_cookie):

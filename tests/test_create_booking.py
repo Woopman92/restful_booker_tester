@@ -11,6 +11,7 @@ from client.client import create_booking_with_error_response
 from helpers.booking_data import get_create_booking_data
 
 
+@pytest.mark.positive
 class TestCreateBookingPositive:
 
     def test_create_booking(self):
@@ -94,6 +95,7 @@ class TestCreateBookingPositive:
         check_create_booking_response(response=response, expected_data=data)
 
 
+@pytest.mark.negative
 class TestCreateBookingNegative:
 
     @pytest.mark.parametrize('param', [

@@ -12,6 +12,7 @@ from helpers.booking_data import get_create_booking_data
 from helpers.booking_data import get_updated_booking_data
 
 
+@pytest.mark.positive
 class TestUpdateBookingPositive:
 
     @pytest.mark.parametrize(
@@ -122,6 +123,7 @@ class TestUpdateBookingPositive:
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
 
+@pytest.mark.negative
 class TestUpdateBookingNegative:
 
     def test_update_nonexistent_booking(self, nonexistent_booking_id, update_booking_headers_with_cookie):

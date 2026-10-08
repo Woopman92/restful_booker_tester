@@ -1,8 +1,11 @@
+import pytest
+
 from checkers.booking import check_get_booking_ids_response_structure
 from client.client import get_booking_ids
 from helpers.common import generate_unique_string
 
 
+@pytest.mark.positive
 class TestGetBookingIdsPositive:
 
     def test_get_all_booking_ids(self):

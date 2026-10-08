@@ -13,6 +13,7 @@ from client.client import update_booking_with_error_response
 from helpers.booking_data import get_updated_booking_data
 
 
+@pytest.mark.positive
 class TestPartialUpdateBookingPositive:
 
     @pytest.mark.parametrize(
@@ -127,6 +128,7 @@ class TestPartialUpdateBookingPositive:
         check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
 
 
+@pytest.mark.negative
 class TestPartialUpdateBookingNegative:
 
     def test_partial_update_nonexistent_booking(self, nonexistent_booking_id, update_booking_headers_with_cookie):

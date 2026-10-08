@@ -1,10 +1,13 @@
 from http import HTTPStatus
 
+import pytest
+
 from checkers.booking import check_get_booking_response
 from client.client import get_booking
 from client.client import get_booking_with_error_response
 
 
+@pytest.mark.positive
 class TestGetBookingPositive:
 
     def test_get_created_booking(self, user_booking):
@@ -15,6 +18,7 @@ class TestGetBookingPositive:
         check_get_booking_response(response, booking_data)
 
 
+@pytest.mark.negative
 class TestGetBookingNegative:
 
     def test_get_nonexistent_booking(self, user_booking):

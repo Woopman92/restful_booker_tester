@@ -5,6 +5,7 @@ from client.client import create_token
 from constants import CREATE_TOKEN_CREDS
 
 
+@pytest.mark.positive
 class TestCreateTokenPositive:
 
     def test_create_token(self):
@@ -19,6 +20,7 @@ class TestCreateTokenPositive:
         assert response.json()['token'] != user_token
 
 
+@pytest.mark.negative
 class TestCreateTokenNegative:
 
     @pytest.mark.parametrize(
