@@ -195,7 +195,7 @@ class TestCreateBookingNegative:
         headers = {'Content-Type': 'text/plain'}
 
         response = create_booking_with_error_response(
-            expected_status_code=HTTPStatus.INTERNAL_SERVER_ERROR, data=json.dumps(data), headers=headers
+            expected_status_code=HTTPStatus.INTERNAL_SERVER_ERROR, payload=data, headers=headers
         )
 
         assert response.text == 'Internal Server Error'
@@ -205,10 +205,10 @@ class TestCreateBookingNegative:
         headers = {'Accept': 'text/plain'}
 
         response = create_booking_with_error_response(
-            expected_status_code=HTTPStatus.INTERNAL_SERVER_ERROR, data=json.dumps(data), headers=headers
+            expected_status_code=HTTPStatus.IM_A_TEAPOT, payload=data, headers=headers
         )
 
-        assert response.text == 'Internal Server Error'
+        assert response.text == "I'm a Teapot"
 
     def test_create_booking_with_malformed_json(self):
         data = get_create_booking_data()
