@@ -28,3 +28,12 @@ class TestGetBookingNegative:
             expected_status_code=HTTPStatus.NOT_FOUND, booking_id=booking_id + 10000
         )
         assert response.text == 'Not Found'
+
+    def test_get_booking_with_invalid_accept_header(self, user_booking):
+        headers = {'Accept': 'text/plain'}
+        booking_data, booking_id = user_booking
+
+        response = get_booking_with_error_response(
+            expected_status_code=HTTPStatus.IM_A_TEAPOT, booking_id=booking_id, headers=headers
+        )
+        assert response.text == "I'm a Teapot"

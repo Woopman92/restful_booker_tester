@@ -31,7 +31,7 @@ def get_booking_ids(
     checkout: date | None = None,
 ):
     """
-    Send request POST /booking
+    Send request GET /booking
     :param expected_status_code: Expected response HTTP status code
     :param firstname: Return bookings with a specific firstname
     :param lastname: Return bookings with a specific lastname
@@ -82,9 +82,14 @@ def get_booking(expected_status_code=HTTPStatus.OK, booking_id: int = None):
     ).json()
 
 
-def get_booking_with_error_response(expected_status_code=HTTPStatus.BAD_REQUEST, booking_id: int = None):
+def get_booking_with_error_response(
+    expected_status_code=HTTPStatus.BAD_REQUEST, booking_id: int = None, headers: dict = None
+):
     return make_request(
-        method='GET', url=GET_BOOKING.format(booking_id=booking_id), expected_status_code=expected_status_code
+        method='GET',
+        url=GET_BOOKING.format(booking_id=booking_id),
+        expected_status_code=expected_status_code,
+        headers=headers
     )
 
 

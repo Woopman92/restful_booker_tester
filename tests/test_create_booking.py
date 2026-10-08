@@ -1,4 +1,3 @@
-import json
 from datetime import date
 from datetime import timedelta
 from http import HTTPStatus
