@@ -220,6 +220,21 @@ files = [
 ]
 
 [[package]]
+name = "dict2xml"
+version = "1.7.8"
+description = "Small utility to convert a python dictionary into an XML string"
+optional = false
+python-versions = ">=3.5"
+groups = ["main"]
+files = [
+    {file = "dict2xml-1.7.8-py3-none-any.whl", hash = "sha256:0da9213d78496322a9befaa4f934652315973fbf5437f0c0f70f14fc6d16acc5"},
+    {file = "dict2xml-1.7.8.tar.gz", hash = "sha256:6638da9ad32b0f8be8336d16e0f36a9c3821145e34ed3ef4889822a9b980fb28"},
+]
+
+[package.extras]
+tests = ["pytest (==8.3.2)"]
+
+[[package]]
 name = "eradicate"
 version = "2.3.0"
 description = "Removes commented-out code."
@@ -704,4 +719,4 @@ platformdirs = ">=3.5.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<4.0"
-content-hash = "2e2f60744e772a9d4e166c78a09bb02aa6c59a6e9fece9ac190e6dd9aba0c688"
+content-hash = "26ccd0bcec68a94aa6a1bd4dfe1a324ec9f7572fecb9e059dfaa7583a77d27d2"

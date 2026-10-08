@@ -3,10 +3,13 @@ from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
+from dict2xml import dict2xml
 
 from checkers.booking import check_create_booking_response
+from checkers.booking import check_create_booking_xml_response
 from client.client import create_booking
 from client.client import create_booking_with_error_response
+from client.client import create_booking_xml
 from helpers.booking_data import get_create_booking_data
 
 
@@ -19,6 +22,15 @@ class TestCreateBookingPositive:
         response = create_booking(payload=data)
 
         check_create_booking_response(response=response, expected_data=data)
+
+    def test_create_booking_xml(self):
+        headers = {'Content-Type': 'text/xml', 'Accept': 'application/xml'}
+        data = get_create_booking_data()
+        data_xml = dict2xml(data, wrap='booking')
+
+        response = create_booking_xml(payload=data_xml, headers=headers)
+
+        check_create_booking_xml_response(response=response, expected_data=data)
 
     @pytest.mark.parametrize('value', ['A', 'Alexander', 'John Doe', 'John-Doe', 'O`Connor', 'A' * 1000, ''])
     @pytest.mark.parametrize('param', ['firstname', 'lastname'])

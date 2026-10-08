@@ -1,3 +1,4 @@
+import xml.etree.ElementTree as ET
 from http import HTTPStatus
 
 from client.client import get_booking
@@ -32,18 +33,75 @@ def check_get_booking_response(response: dict, expected_data: dict):
     assert response == expected_data
 
 
+def check_get_booking_xml_response(response: str, expected_data: dict):
+    root = ET.fromstringlist(response)
+
+    assert root.find('firstname').text == expected_data['firstname']
+    assert root.find('lastname').text == expected_data['lastname']
+    assert root.find('totalprice').text == str(expected_data['totalprice'])
+    assert root.find('depositpaid').text == str(expected_data['depositpaid']).lower()
+
+    booking_dates = root.find('bookingdates')
+
+    assert booking_dates.find('checkin').text == expected_data['bookingdates']['checkin']
+    assert booking_dates.find('checkout').text == expected_data['bookingdates']['checkout']
+
+    assert root.find('additionalneeds').text == expected_data['additionalneeds']
+
+
 def check_create_booking_response(response: dict, expected_data: dict):
     assert isinstance(response['bookingid'], int)
     assert response['booking'] == expected_data
+
+
+def check_create_booking_xml_response(response: str, expected_data: dict):
+    root = ET.fromstringlist(response)
+
+    assert int(root.find('bookingid').text)
+
+    booking = root.find('booking')
+
+    assert booking.find('firstname').text == expected_data['firstname']
+    assert booking.find('lastname').text == expected_data['lastname']
+    assert booking.find('totalprice').text == str(expected_data['totalprice'])
+    assert booking.find('depositpaid').text == str(expected_data['depositpaid']).lower()
+
+    booking_dates = booking.find('bookingdates')
+
+    assert booking_dates.find('checkin').text == expected_data['bookingdates']['checkin']
+    assert booking_dates.find('checkout').text == expected_data['bookingdates']['checkout']
+
+    assert booking.find('additionalneeds').text == expected_data['additionalneeds']
 
 
 def check_update_booking_response(response: dict, expected_data: dict):
     assert response == expected_data
 
 
-def check_booking_update(booking_id: int, expected_data: dict):
+def check_update_booking_xml_response(response: str, expected_data: dict):
+    root = ET.fromstringlist(response)
+
+    assert root.find('firstname').text == expected_data['firstname']
+    assert root.find('lastname').text == expected_data['lastname']
+    assert root.find('totalprice').text == str(expected_data['totalprice'])
+    assert root.find('depositpaid').text == str(expected_data['depositpaid']).lower()
+
+    booking_dates = root.find('bookingdates')
+
+    assert booking_dates.find('checkin').text == expected_data['bookingdates']['checkin']
+    assert booking_dates.find('checkout').text == expected_data['bookingdates']['checkout']
+
+    assert root.find('additionalneeds').text == expected_data['additionalneeds']
+
+
+def check_booking_updated(booking_id: int, expected_data: dict):
     response = get_booking(booking_id=booking_id)
     check_get_booking_response(response, expected_data)
+
+
+def check_booking_updated_xml(booking_id: int, expected_data: dict):
+    response = get_booking(booking_id=booking_id)
+    check_get_booking_xml_response(response, expected_data)
 
 
 def check_booking_deleted(booking_id: int):

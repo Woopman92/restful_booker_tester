@@ -63,6 +63,19 @@ def create_booking(expected_status_code=HTTPStatus.OK, payload: dict = None, hea
     ).json()
 
 
+def create_booking_xml(expected_status_code=HTTPStatus.OK, payload: dict = None, headers: dict = None, **kwargs):
+    headers = headers or {'Content-Type': 'text/xml', 'Accept': 'application/xml'}
+
+    return make_request(
+        method='POST',
+        url=CREATE_BOOKING_URL,
+        expected_status_code=expected_status_code,
+        data=payload,
+        headers=headers,
+        **kwargs
+    )
+
+
 def create_booking_with_error_response(
     expected_status_code=HTTPStatus.BAD_REQUEST, payload: dict = None, headers: dict = None, **kwargs
 ):
@@ -80,6 +93,16 @@ def get_booking(expected_status_code=HTTPStatus.OK, booking_id: int = None):
     return make_request(
         method='GET', url=GET_BOOKING.format(booking_id=booking_id), expected_status_code=expected_status_code
     ).json()
+
+
+def get_booking_xml(expected_status_code=HTTPStatus.OK, booking_id: int = None):
+    headers = {'Accept': 'application/xml'}
+    return make_request(
+        method='GET',
+        url=GET_BOOKING.format(booking_id=booking_id),
+        expected_status_code=expected_status_code,
+        headers=headers
+    ).text
 
 
 def get_booking_with_error_response(
@@ -104,6 +127,21 @@ def update_booking(
         headers=headers,
         **kwargs
     ).json()
+
+
+def update_booking_xml(
+    expected_status_code=HTTPStatus.OK, booking_id: int = None, payload: str = None, headers: dict = None, **kwargs
+):
+    headers = headers or {'Content-Type': 'text/xml', 'Accept': 'application/xml'}
+
+    return make_request(
+        method='PUT',
+        url=UPDATE_BOOKING_URL.format(booking_id=booking_id),
+        expected_status_code=expected_status_code,
+        data=payload,
+        headers=headers,
+        **kwargs
+    )
 
 
 def update_booking_with_error_response(
@@ -134,6 +172,19 @@ def partial_update_booking(
         headers=headers,
         **kwargs
     ).json()
+
+
+def partial_update_booking_xml(
+    expected_status_code=HTTPStatus.OK, booking_id: int = None, payload: dict = None, headers: dict = None, **kwargs
+):
+    return make_request(
+        method='PATCH',
+        url=PARTIAL_UPDATE_BOOKING_URL.format(booking_id=booking_id),
+        expected_status_code=expected_status_code,
+        data=payload,
+        headers=headers,
+        **kwargs
+    )
 
 
 def partial_update_booking_with_error_response(

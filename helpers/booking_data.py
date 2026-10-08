@@ -29,7 +29,7 @@ def get_create_booking_data(
     checkin = checkin or str(today_date)
     checkout = checkout or str(today_date + timedelta(days=5))
     additionalneeds = additionalneeds or generate_unique_string(length=25)
-    response = {
+    booking_data = {
         'firstname': firstname,
         'lastname': lastname,
         'totalprice': totalprice,
@@ -37,7 +37,7 @@ def get_create_booking_data(
         'bookingdates': {'checkin': checkin, 'checkout': checkout},
         'additionalneeds': additionalneeds
     }
-    return response
+    return booking_data
 
 
 def get_updated_booking_data(
@@ -74,7 +74,7 @@ def get_updated_booking_data(
     checkin = checkin or str(today_date)
     checkout = checkout or str(today_date + timedelta(days=5))
     additionalneeds = additionalneeds or generate_unique_string(length=25)
-    response = {
+    booking_update_data = {
         'firstname': firstname,
         'lastname': lastname,
         'totalprice': totalprice,
@@ -82,4 +82,4 @@ def get_updated_booking_data(
         'bookingdates': {'checkin': checkin, 'checkout': checkout},
         'additionalneeds': additionalneeds
     }
-    return response
+    return booking_update_data

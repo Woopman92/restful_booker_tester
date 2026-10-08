@@ -2,12 +2,15 @@ from copy import deepcopy
 from http import HTTPStatus
 
 import pytest
+from dict2xml import dict2xml
 from pytest_lazy_fixtures import lf
 
-from checkers.booking import check_booking_update
+from checkers.booking import check_booking_updated
 from checkers.booking import check_update_booking_response
+from checkers.booking import check_update_booking_xml_response
 from client.client import update_booking
 from client.client import update_booking_with_error_response
+from client.client import update_booking_xml
 from helpers.booking_data import get_create_booking_data
 from helpers.booking_data import get_updated_booking_data
 
@@ -25,7 +28,25 @@ class TestUpdateBookingPositive:
         response = update_booking(booking_id=booking_id, payload=data, headers=headers)
 
         check_update_booking_response(response=response, expected_data=data)
-        check_booking_update(booking_id=booking_id, expected_data=data)
+        check_booking_updated(booking_id=booking_id, expected_data=data)
+
+    @pytest.mark.parametrize(
+        'update_booking_headers_with_cookie', [
+            {'Content-Type': 'text/xml', 'Accept': 'application/xml'},
+        ],
+        indirect=True
+    )
+    def test_update_booking_xml(self, user_booking, update_booking_headers_with_cookie):
+        existing_booking_data, booking_id = user_booking
+        data = get_updated_booking_data(existing_booking_data=existing_booking_data)
+        data_xml = dict2xml(data, wrap='booking')
+
+        response = update_booking_xml(
+            booking_id=booking_id, payload=data_xml, headers=update_booking_headers_with_cookie
+        )
+
+        check_update_booking_xml_response(response=response, expected_data=data)
+        check_booking_updated(booking_id=booking_id, expected_data=data)
 
     def test_update_booking_with_same_params(self, user_booking, update_booking_headers_with_cookie):
         existing_booking_data, booking_id = user_booking
@@ -35,7 +56,7 @@ class TestUpdateBookingPositive:
         )
 
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', ['A', 'Alexander', 'John Doe', 'John-Doe', 'O`Connor', 'A' * 1000, ''])
     @pytest.mark.parametrize('param', ['firstname', 'lastname'])
@@ -48,7 +69,7 @@ class TestUpdateBookingPositive:
         )
 
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', [0, 1, 999999999, -1, 2.5, 2.6, 3.5, '100'])
     def test_update_booking_with_diff_valid_total_price_values(
@@ -63,7 +84,7 @@ class TestUpdateBookingPositive:
 
         existing_booking_data['totalprice'] = int(value)
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', [True, False, 1, 0, '', 'false'])
     def test_update_booking_with_diff_valid_depositpaid_values(
@@ -78,7 +99,7 @@ class TestUpdateBookingPositive:
 
         existing_booking_data['depositpaid'] = bool(value)
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', ['2026/01/01', '01-01-2026', '2026-1-1'])
     @pytest.mark.parametrize('param', ['checkin', 'checkout'])
@@ -94,7 +115,7 @@ class TestUpdateBookingPositive:
 
         existing_booking_data['bookingdates'][param] = '2026-01-01'
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', ['Breakfast, dinner and supper', 'Breakfast', '', 123, 'A' * 1000])
     def test_update_booking_with_diff_valid_additionalneeds(
@@ -108,7 +129,7 @@ class TestUpdateBookingPositive:
         )
 
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     def test_update_booking_without_additionalneeds_param(self, user_booking, update_booking_headers_with_cookie):
         existing_booking_data, booking_id = user_booking
@@ -120,7 +141,7 @@ class TestUpdateBookingPositive:
 
         existing_booking_data['additionalneeds'] = value
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
 
 @pytest.mark.negative
@@ -159,7 +180,7 @@ class TestUpdateBookingNegative:
 
         assert response.text == 'Bad Request'
         # checking that the booking details have not changed
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('param', ['checkin', 'checkout'])
     def test_update_booking_without_bookingdates_required_params(
@@ -178,7 +199,7 @@ class TestUpdateBookingNegative:
 
         assert response.text == 'Bad Request'
         # checking that the booking details have not changed
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize(
         'param,value',
@@ -203,7 +224,7 @@ class TestUpdateBookingNegative:
 
         assert response.text == 'Internal Server Error'
         # checking that the booking details have not changed
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     def test_update_booking_with_invalid_type_bookingdates(self, user_booking, update_booking_headers_with_cookie):
         existing_booking_data, booking_id = user_booking
@@ -219,7 +240,7 @@ class TestUpdateBookingNegative:
 
         assert response.text == 'Bad Request'
         # checking that the booking details have not changed
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('value', ['2018-13-01', '2018-01-32'], ids=['invalid_month', 'invalid_day'])
     @pytest.mark.parametrize('param', ['checkin', 'checkout'])
@@ -236,7 +257,7 @@ class TestUpdateBookingNegative:
         # Need to clarify the expected result. This is a test of the function's current behavior
         existing_booking_data['bookingdates'][param] = '0NaN-aN-aN'
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('param', ['checkin', 'checkout'])
     def test_update_booking_with_invalid_non_leap_year_bookingdates(
@@ -252,7 +273,7 @@ class TestUpdateBookingNegative:
         # Need to clarify the expected result. This is a test of the function's current behavior
         existing_booking_data['bookingdates'][param] = '2026-03-01'
         check_update_booking_response(response=response, expected_data=existing_booking_data)
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize(
         'nontype_data',
@@ -281,7 +302,7 @@ class TestUpdateBookingNegative:
 
         assert response.text == 'Bad Request'
         # checking that the booking details have not changed
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize('header', [
         {'Cookie': 'token=123'},
@@ -305,7 +326,7 @@ class TestUpdateBookingNegative:
 
         assert response.text == 'Forbidden'
         # checking that the booking details have not changed
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize(
         'update_booking_headers_with_cookie', [
@@ -325,7 +346,7 @@ class TestUpdateBookingNegative:
 
         assert response.text == 'Bad Request'
         # checking that the booking details have not changed
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
     @pytest.mark.parametrize(
         'update_booking_headers_with_cookie', [
@@ -344,7 +365,7 @@ class TestUpdateBookingNegative:
         )
 
         assert response.text == "I\'m a Teapot"
-        check_booking_update(booking_id=booking_id, expected_data=data)
+        check_booking_updated(booking_id=booking_id, expected_data=data)
 
     def test_update_booking_with_malformed_json(self, user_booking, update_booking_headers_with_cookie):
         existing_booking_data, booking_id = user_booking
@@ -359,4 +380,4 @@ class TestUpdateBookingNegative:
         )
 
         assert response.text == 'Bad Request'
-        check_booking_update(booking_id=booking_id, expected_data=existing_booking_data)
+        check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
