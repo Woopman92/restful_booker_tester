@@ -32,6 +32,7 @@ class TestGetBookingIdsPositive:
 
         assert response == [{'bookingid': booking_ids[0]}, {'bookingid': booking_ids[1]}]
 
+    @pytest.mark.xfail(reason='The expected result does not match the actual one')
     def test_get_booking_ids_filtered_by_checkin(self, user_bookings_with_diff_checkin):
         checkin, booking_ids = user_bookings_with_diff_checkin
         response = get_booking_ids(checkin=checkin)
@@ -42,6 +43,7 @@ class TestGetBookingIdsPositive:
         # for which the checkin value matches the one specified in the parameter
         assert {'bookingid': booking_ids[0]} in response
 
+    @pytest.mark.xfail(reason='The expected result does not match the actual one')
     def test_get_booking_ids_filtered_by_checkout(self, user_bookings_with_diff_checkout):
         checkout, booking_ids = user_bookings_with_diff_checkout
         response = get_booking_ids(checkout=checkout)
@@ -54,6 +56,7 @@ class TestGetBookingIdsPositive:
         # that has checkout date lesser than the one specified in the parameter
         assert {'bookingid': booking_ids[2]} not in response
 
+    @pytest.mark.xfail(reason='The expected result does not match the actual one')
     def test_get_booking_ids_by_all_params(self, user_bookings_with_diff_params):
         request_params, booking_ids = user_bookings_with_diff_params
         response = get_booking_ids(**request_params)

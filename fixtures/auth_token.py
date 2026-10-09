@@ -6,5 +6,5 @@ from constants import CREATE_TOKEN_CREDS
 
 @pytest.fixture
 def user_token():
-    response = create_token(CREATE_TOKEN_CREDS)
+    response = create_token(data=CREATE_TOKEN_CREDS)
     return response['token']

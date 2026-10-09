@@ -58,7 +58,18 @@ class TestUpdateBookingPositive:
         check_update_booking_response(response=response, expected_data=existing_booking_data)
         check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
-    @pytest.mark.parametrize('value', ['A', 'Alexander', 'John Doe', 'John-Doe', 'O`Connor', 'A' * 1000, ''])
+    @pytest.mark.parametrize(
+        'value', ['A', 'Alexander', 'John Doe', 'John-Doe', 'O`Connor', 'A' * 1000, ''],
+        ids=[
+            'one char name',
+            'common name',
+            'name with space',
+            'name with hyphen',
+            'name with backtick',
+            'long name',
+            'empty string',
+        ]
+    )
     @pytest.mark.parametrize('param', ['firstname', 'lastname'])
     def test_update_booking_with_diff_valid_names(self, user_booking, update_booking_headers_with_cookie, param, value):
         existing_booking_data, booking_id = user_booking
@@ -117,7 +128,10 @@ class TestUpdateBookingPositive:
         check_update_booking_response(response=response, expected_data=existing_booking_data)
         check_booking_updated(booking_id=booking_id, expected_data=existing_booking_data)
 
-    @pytest.mark.parametrize('value', ['Breakfast, dinner and supper', 'Breakfast', '', 123, 'A' * 1000])
+    @pytest.mark.parametrize(
+        'value', ['Breakfast, dinner and supper', 'Breakfast', '', 123, 'A' * 1000],
+        ids=['string with spaces', 'one word string', 'empty string', 'int', 'long string']
+    )
     def test_update_booking_with_diff_valid_additionalneeds(
         self, user_booking, update_booking_headers_with_cookie, value
     ):
@@ -287,6 +301,16 @@ class TestUpdateBookingNegative:
             {'bookingdates': {'checkin': '2018-01-01', 'checkout': None}},
             {'bookingdates': {'checkin': None, 'checkout': None}},
         ],
+        ids=[
+            'firstname',
+            'lastname',
+            'totalprice',
+            'depositpaid',
+            'bookingdates',
+            'checkin',
+            'checkout',
+            'checkin and checkout',
+        ]
     )
     def test_update_booking_with_non_type_param(self, user_booking, update_booking_headers_with_cookie, nontype_data):
         existing_booking_data, booking_id = user_booking

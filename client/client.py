@@ -19,8 +19,10 @@ DELETE_BOOKING = GET_BOOKING
 HEALTH_CHECK = HOST + '/ping'
 
 
-def create_token(data: dict = None, headers: dict = None):
-    return make_request(method='POST', url=CREATE_TOKEN_URL, data=data, headers=headers).json()
+def create_token(expected_status_code=HTTPStatus.OK, data: dict = None, headers: dict = None):
+    return make_request(
+        method='POST', url=CREATE_TOKEN_URL, expected_status_code=expected_status_code, data=data, headers=headers
+    ).json()
 
 
 def get_booking_ids(

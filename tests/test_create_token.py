@@ -9,15 +9,15 @@ from constants import CREATE_TOKEN_CREDS
 class TestCreateTokenPositive:
 
     def test_create_token(self):
-        response = create_token(CREATE_TOKEN_CREDS)
+        response = create_token(data=CREATE_TOKEN_CREDS)
 
         check_successful_token_create_response(response)
 
     def test_recreate_token(self, user_token):
-        response = create_token(CREATE_TOKEN_CREDS)
+        response = create_token(data=CREATE_TOKEN_CREDS)
 
         check_successful_token_create_response(response)
-        assert response.json()['token'] != user_token
+        assert response['token'] != user_token
 
 
 @pytest.mark.negative
@@ -31,6 +31,6 @@ class TestCreateTokenNegative:
         ids=['wrong_username', 'wrong_password']
     )
     def test_create_token_with_wrong_credentials(self, data):
-        response = create_token(data)
+        response = create_token(data=data)
 
-        assert response.json() == {'reason': 'Bad credentials'}
+        assert response == {'reason': 'Bad credentials'}
